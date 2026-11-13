@@ -1,510 +1,213 @@
+:root{--teal:#1F7A7A;--teal2:#86CBC4;--gold:#F2B84B;--cream:#FFF9EE;--ink:#2B2B2B;--r:18px}
+*{box-sizing:border-box}
+body{margin:0;font-family:Cairo,sans-serif;background:var(--cream);color:var(--ink);line-height:1.8;font-size:17px;
+background-image:radial-gradient(circle at 1px 1px,rgba(31,122,122,.08) 1px,transparent 0);background-size:26px 26px}
+h1,h2,h3,.brand span{font-family:'Reem Kufi',Cairo,sans-serif;color:var(--teal);margin:.3em 0}
+h1{font-size:clamp(2.2rem,7vw,3.8rem);line-height:1.2}
+button,select,input{font:inherit}
+button:focus-visible,select:focus-visible,input:focus-visible,label:focus-within{outline:3px solid var(--gold);outline-offset:2px}
+.top{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:10px 5vw;background:rgba(255,249,238,.95);border-bottom:2px solid var(--teal2)}
+.brand{display:flex;align-items:center;gap:8px;background:none;border:0;cursor:pointer;font-size:1.3rem}
+.brand img{width:40px;height:40px}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{background:none;border:0;padding:8px 14px;border-radius:99px;cursor:pointer;color:var(--ink)}
+nav button:hover,nav button.on{background:var(--teal);color:#fff}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.9rem}
+.voicepick{display:flex;gap:6px;align-items:center}
+select,input[type=text]{padding:8px 12px;border:2px solid var(--teal2);border-radius:12px;background:#fff}
+#guide-toggle{padding:8px 14px;border-radius:99px;border:2px solid var(--teal);background:#fff;cursor:pointer;color:var(--teal)}
+#guide-toggle[aria-pressed=false]{opacity:.6}
+.page{max-width:980px;margin:0 auto;padding:28px 5vw 60px}
+.hero{display:grid;gap:24px;align-items:center;grid-template-columns:1.1fr .9fr}
+.hero p{font-size:1.15rem;max-width:34ch}
+.arch{border:4px solid var(--teal);border-radius:200px 200px 24px 24px;background:var(--teal2);aspect-ratio:3/4;overflow:hidden;max-width:340px;justify-self:center}
+.arch img{width:100%;height:100%;object-fit:cover}
+.arch.noimg{display:flex;align-items:center;justify-content:center}.arch.noimg::after{content:"ق";font:700 8rem 'Reem Kufi';color:#fff}
+.row{display:flex;gap:10px;align-items:center;margin:14px 0}.wrap{flex-wrap:wrap}
+.btn{padding:12px 22px;border-radius:99px;border:2px solid var(--teal);background:var(--teal);color:#fff;cursor:pointer;font-weight:600;display:inline-block}
+.btn:hover{filter:brightness(1.08)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#3a2a00}
+.btn.ghost{background:#fff;color:var(--teal)}
+.cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:36px}
+.card{background:#fff;border:2px solid var(--teal2);border-radius:var(--r);padding:16px 20px}
+.card h3{margin:0}
+.cambox{position:relative;background:var(--teal);border-radius:var(--r);overflow:hidden;aspect-ratio:4/3;max-width:560px}
+.cambox video,.cambox canvas{width:100%;height:100%;object-fit:cover}
+.hint{color:#6b6b6b;font-size:.9rem}
+.cambox .hint{position:absolute;inset:auto 0 12px;text-align:center;color:#fff}
+.result{background:#fff;border:3px solid var(--gold);border-radius:var(--r);padding:16px;max-width:560px;text-align:center}
+.word{font:700 3rem 'Reem Kufi';color:var(--teal)}
+.en{color:#6b6b6b}.ex{font-size:1.2rem}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{background:#fff;border:2px solid var(--teal2);border-radius:14px;padding:8px 14px;cursor:pointer;text-align:center;font-size:1.1rem}
+.chip:hover{border-color:var(--gold)}
+.chip small{display:block;color:#6b6b6b;font-size:.8rem}
+.chip img{width:54px;height:54px;object-fit:contain;display:block;margin:auto}
+.chatbox{background:#fff;border:2px solid var(--teal2);border-radius:var(--r);padding:14px;min-height:260px;max-height:50vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.bubble{padding:10px 14px;border-radius:16px;max-width:85%;font-size:1.15rem}
+.bot{background:#E3F4F1;align-self:flex-start}
+.me{background:var(--cream);border:1px solid var(--teal2);align-self:flex-end}
+.fix{background:#FDEBC4;font-size:.95rem;border-radius:10px;padding:6px 10px;margin-top:6px}
+.mic{width:54px;height:54px;border-radius:50%;border:0;background:var(--teal);font-size:1.4rem;cursor:pointer}
+.mic.rec{background:#c0392b}
+#msg{flex:1}
+.map{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.st{border:3px solid var(--teal2);background:#fff;border-radius:var(--r);padding:12px;cursor:pointer;text-align:center;font:inherit}
+.st img{width:100%;height:110px;object-fit:cover;border-radius:12px;background:var(--teal2)}
+.st.done{border-color:var(--gold)}.st.lock{opacity:.5;cursor:default}
+.list li{margin:6px 0}
+.video iframe{width:100%;aspect-ratio:16/9;border:2px solid var(--teal2);border-radius:var(--r);background:#fff}
+@media(max-width:700px){.hero{grid-template-columns:1fr}.arch{max-width:240px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.qbox{background:#fff;border:2px solid var(--teal2);border-radius:var(--r);padding:18px;max-width:640px}
+.pbar{height:10px;background:#d6ece9;border-radius:9px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--gold);width:0;transition:width .3s}
+.passage{background:var(--cream);border-right:5px solid var(--gold);padding:10px 14px;border-radius:10px;font-size:1.25rem;margin:10px 0}
+.qopt{display:block;width:100%;margin:8px 0;padding:12px;border:2px solid var(--teal2);background:#fff;border-radius:14px;font-size:1.3rem;cursor:pointer}
+.qopt:hover{border-color:var(--gold)}.qopt.ghostb{font-size:1rem;color:#6b6b6b;border-style:dashed}
+.big{font:700 2.6rem 'Reem Kufi';color:var(--teal)}
+.sk{display:flex;gap:10px;align-items:center;margin:8px 0}.sk span{width:80px;text-align:right}.sk .pbar{flex:1}
 
-/* =========================================
-   RESPONSIVE DESIGN - جميع أحجام الشاشات
-   ========================================= */
-
-/* منع تجاوز العناصر حدود الشاشة */
-* {
-  box-sizing: border-box;
+/* ===== تعديلات التجاوب والصور ===== */
+body{background-image:linear-gradient(rgba(255,249,238,.88),rgba(255,249,238,.88)),url('assets/img/pattern-arabesque.jpg');background-size:auto,420px}
+.top{padding:10px clamp(14px,4vw,48px)}
+.brand img{width:auto;height:clamp(36px,5vw,54px);max-width:100px;object-fit:contain;mix-blend-mode:multiply;border-radius:10px}
+.page{max-width:1280px;width:100%;padding:28px clamp(14px,4vw,48px) 50px}
+.hero{grid-template-columns:1.2fr .8fr;gap:clamp(20px,4vw,60px);min-height:55vh}
+.hero p{max-width:48ch}
+.arch{max-width:420px;width:100%}
+.arch img{display:block}
+.lens-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:28px;align-items:start}
+.cambox,.result{max-width:none}
+.chat-grid{display:grid;grid-template-columns:260px minmax(0,1fr);gap:24px;align-items:start}
+.chat-side{background:#fff;border:2px solid var(--teal2);border-radius:var(--r);padding:16px;text-align:center}
+.chat-side img{width:100%;max-width:210px;border-radius:16px}
+.chat-side .row{flex-direction:column;align-items:stretch}
+.chatbox{min-height:340px;height:calc(100dvh - 310px);max-height:none}
+.bubble{font-size:1.25rem}
+#msg{min-width:0}
+.quiz-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.5fr);gap:28px;align-items:start}
+.qbox{max-width:none}
+.qside img{width:100%;border-radius:var(--r);margin-bottom:14px;display:block}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+.foot{text-align:center;padding:20px 5vw 36px;border-top:2px solid var(--teal2)}
+@media(max-width:900px){
+  nav{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap}nav button{white-space:nowrap}
+  .lens-grid,.about-grid,.quiz-grid{grid-template-columns:1fr}
+  .qside{display:flex;gap:12px}.qside img{margin:0;flex:1;min-width:0;max-height:140px;object-fit:cover}
+}
+@media(max-width:700px){
+  .chat-grid{grid-template-columns:1fr}
+  .chat-side{display:flex;gap:12px;align-items:center}.chat-side img{width:72px}
+  .chat-side .row{flex-direction:row;margin:0;flex:1}.chatbox{height:58dvh}
+  .hero{min-height:0}
 }
 
-html {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-  -webkit-text-size-adjust: 100%;
+/* ===== العدسة والرحلة والاختبار (الإصدار 3) ===== */
+.cambox{aspect-ratio:16/10;max-height:340px}
+#demo,#mylist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+#mylist .hint{grid-column:1/-1}
+.chip{padding:12px;font-size:1.5rem;border-radius:18px}
+.chip img{width:100%;height:110px;object-fit:contain;margin-bottom:6px}
+.chip small{font-size:.95rem}
+.howto{background:#fff;border:2px solid var(--gold);border-radius:var(--r);padding:16px 20px;margin-bottom:20px}
+.howto ol{margin:8px 0;padding-right:22px}
+.map{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.st{display:flex;flex-direction:column;gap:6px;padding:0 0 12px;overflow:hidden}
+.st img{height:150px;border-radius:0}
+.st span{font-size:.9rem;color:#6b6b6b}
+.st.lock img{filter:grayscale(1)}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin:14px 0}
+.wcard{background:#fff;border:2px solid var(--teal2);border-radius:18px;padding:10px;cursor:pointer;font:inherit;text-align:center}
+.wcard img{width:100%;height:110px;object-fit:cover;border-radius:12px}
+.wcard b{display:block;font-size:1.6rem;color:var(--teal)}
+.wcard small{color:#6b6b6b}
+.wcard.heard{border-color:var(--gold);background:#FFF4D9}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+#sq-img{text-align:center;margin:10px 0}
+#sq-img img{max-height:220px;max-width:100%;border-radius:16px}
+.qopt.right{background:#d8f3e6;border-color:#2e9e6b}
+.qopt.wrong{background:#fde2e0;border-color:#c0392b}
+#station-view{margin-top:24px}
+#q-play,#q-res{max-width:820px;margin:0 auto}
+.qintro{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:center;padding:26px;background:linear-gradient(135deg,#fff,#E3F4F1);border-width:3px}
+.qmascot{width:100%;border-radius:20px}
+.facts{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.facts span{background:var(--gold);color:#3a2a00;padding:4px 14px;border-radius:99px;font-weight:600}
+.ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:14px 0}
+.ladder span{background:#fff;border:2px solid var(--teal2);border-radius:12px;padding:8px 4px;text-align:center;font-weight:600;color:var(--teal)}
+.ladder small{display:block;color:#6b6b6b;font-weight:400}
+.big-btn{font-size:1.25rem;padding:14px 38px}
+@media(max-width:700px){.cambox{max-height:300px}.qintro{grid-template-columns:1fr}.qmascot{max-width:160px;margin:auto}}
+
+/* ===== الإصدار 4: خط الأسئلة، السماع، الحوار، الحساب ===== */
+body{font-size:1.0625rem}
+input[type=email],input[type=password]{padding:8px 12px;border:2px solid var(--teal2);border-radius:12px;background:#fff;width:100%;margin:6px 0}
+
+/* خط الأسئلة */
+#q-text,#sq-t,.qopt,.passage,.wcard b{font-family:'Noto Naskh Arabic',serif;font-weight:500;color:var(--ink);line-height:2}
+#q-text,#sq-t{font-size:1.6rem}
+.qopt{font-size:1.45rem}
+.passage{font-size:1.5rem}
+.qrow{display:flex;align-items:center;gap:12px}.qrow h3{flex:1;margin:0}
+
+/* زر السماع */
+.spk{flex:none;width:48px;height:48px;border-radius:50%;border:0;background:var(--teal);color:#fff;display:inline-grid;place-items:center;cursor:pointer}
+.spk:hover{filter:brightness(1.1)}
+.spk.big{width:64px;height:64px}.spk.big svg{width:32px;height:32px}
+.spk.sm{width:34px;height:34px;background:var(--teal2);color:var(--teal)}.spk.sm svg{width:18px;height:18px}
+#sq-img .spk{margin:10px auto}
+
+/* الحوار */
+.bubble.bot{display:flex;gap:8px;align-items:flex-start}.btxt{flex:1}
+.bubble.typing{opacity:.6;font-size:1rem}
+.chat-tools{justify-content:space-between}
+#b-call.on{background:#c0392b;border-color:#c0392b}
+.tgl{display:flex;gap:6px;align-items:center;font-size:.95rem}
+
+/* الدخول والملف الشخصي */
+.authbox{max-width:460px;margin:20px auto}.authbox .btn{width:100%;margin:6px 0}.authbox .row .btn{flex:1}
+.ptabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.ptab{padding:8px 16px;border-radius:99px;border:2px solid var(--teal2);background:#fff;cursor:pointer;color:var(--teal);font-weight:600}
+.ptab.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.ptab.out{margin-inline-start:auto;border-color:#c0392b;color:#c0392b}
+#pwrap label{display:block;margin:10px 0;font-weight:600}
+#pwrap label input[type=text],#pwrap label select{display:block;width:100%;margin-top:4px}
+.hrow{display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #d6ece9}.hrow b{flex:1}.hrow small{color:#6b6b6b}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin:14px 0}
+.badge{border:2px solid var(--gold);border-radius:var(--r);padding:10px;text-align:center;background:#FFF9E6}
+.badge img{width:100%;height:110px;object-fit:contain}.badge .emo{font-size:3rem;display:block}
+.badge small{display:block;color:#6b6b6b}
+.badge.off{filter:grayscale(1);opacity:.45;border-color:#ccc}
+.toast{position:fixed;inset:auto 0 24px;margin:auto;width:fit-content;max-width:90vw;background:var(--teal);color:#fff;padding:12px 22px;border-radius:99px;z-index:20;font-weight:600}
+
+/* ===== ألوان أزرار الصفحة الرئيسية ===== */
+.hero .row .btn{
+  background:var(--teal);
+  border:2px solid var(--teal);
+  color:#fff;
+  transition:all .25s ease;
 }
 
-body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
+.hero .row .btn:nth-child(2){
+  background:var(--gold);
+  border-color:var(--gold);
+  color:#3a2a00;
 }
 
-img, video, iframe, canvas {
-  max-width: 100%;
+.hero .row .btn:nth-child(3){
+  background:#86CBC4;
+  border-color:#86CBC4;
+  color:#174F4F;
 }
 
-/* السماح للعناصر بالانكماش داخل الشبكات */
-.page,
-.card,
-.qbox,
-.result,
-.chatbox,
-.chat-grid,
-.lens-grid,
-.quiz-grid,
-.about-grid,
-.hero,
-.chat-side {
-  min-width: 0;
+.hero .row .btn:nth-child(4){
+  background:#E3F4F1;
+  border-color:var(--teal2);
+  color:var(--teal);
 }
 
-/* الشريط العلوي */
-.top {
-  width: 100%;
-  min-width: 0;
-}
-
-.brand {
-  min-width: 0;
-}
-
-.tools {
-  min-width: 0;
-  max-width: 100%;
-}
-
-nav {
-  min-width: 0;
-}
-
-nav button {
-  flex-shrink: 0;
-}
-
-/* الأزرار والصفوف */
-.row {
-  flex-wrap: wrap;
-  min-width: 0;
-}
-
-.btn {
-  max-width: 100%;
-  white-space: normal;
-  text-align: center;
-  overflow-wrap: anywhere;
-}
-
-.hero .row {
-  flex-wrap: wrap;
-}
-
-/* الخانات وحقول الإدخال */
-input,
-select,
-textarea,
-button {
-  max-width: 100%;
-}
-
-input,
-select,
-textarea {
-  min-width: 0;
-}
-
-#msg {
-  min-width: 0;
-  width: 100%;
-}
-
-/* الصور */
-.arch {
-  width: 100%;
-}
-
-.arch img,
-.qside img,
-.chat-side img {
-  max-width: 100%;
-}
-
-/* بطاقات المحتوى */
-.cards3,
-.map,
-.wgrid,
-.bgrid,
-#demo,
-#mylist {
-  grid-template-columns:
-    repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-}
-
-/* بطاقات الكلمات */
-.chip,
-.wcard,
-.st,
-.badge {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
-/* أسئلة الاختبار */
-.qintro {
-  min-width: 0;
-}
-
-.ladder {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.qopt {
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-/* =========================================
-   الأجهزة اللوحية
-   ========================================= */
-
-@media (max-width: 900px) {
-
-  .top {
-    gap: 10px;
-  }
-
-  .hero {
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  .lens-grid,
-  .about-grid,
-  .quiz-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .chat-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .page {
-    padding-inline: 24px;
-  }
-
-  .chatbox {
-    height: auto;
-    min-height: 300px;
-    max-height: 55vh;
-  }
-
-  .qintro {
-    grid-template-columns: 150px minmax(0, 1fr);
-  }
-
-}
-
-/* =========================================
-   الهواتف
-   ========================================= */
-
-@media (max-width: 600px) {
-
-  body {
-    font-size: 15px;
-    line-height: 1.8;
-  }
-
-  .page {
-    width: 100%;
-    padding: 18px 14px 36px;
-  }
-
-  h1 {
-    font-size: clamp(1.8rem, 8vw, 2.5rem);
-  }
-
-  h2 {
-    font-size: 1.5rem;
-  }
-
-  h3 {
-    font-size: 1.2rem;
-  }
-
-  /* الشريط العلوي */
-  .top {
-    padding: 10px 12px;
-    gap: 8px;
-  }
-
-  .brand {
-    font-size: 1.05rem;
-  }
-
-  .brand img {
-    height: 38px;
-    max-width: 75px;
-  }
-
-  nav {
-    order: 3;
-    width: 100%;
-    gap: 4px;
-    padding-bottom: 4px;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  nav button {
-    padding: 7px 11px;
-    font-size: .85rem;
-  }
-
-  .tools {
-    width: 100%;
-    justify-content: space-between;
-    gap: 8px;
-  }
-
-  .tools select,
-  .tools input {
-    max-width: 100%;
-    font-size: .85rem;
-  }
-
-  /* الصفحة الرئيسية */
-  .hero {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 18px;
-    min-height: auto;
-    text-align: center;
-  }
-
-  .hero p {
-    max-width: 100%;
-    font-size: 1rem;
-    margin-inline: auto;
-  }
-
-  .hero .row {
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .hero .row .btn {
-    flex: 1 1 140px;
-    min-width: 0;
-    padding: 11px 12px;
-    font-size: .9rem;
-  }
-
-  .arch {
-    width: min(75%, 230px);
-    max-width: 230px;
-    margin: auto;
-  }
-
-  /* الأزرار والصفوف */
-  .row {
-    gap: 8px;
-  }
-
-  .btn {
-    padding: 10px 15px;
-    font-size: .95rem;
-  }
-
-  /* البطاقات */
-  .cards3,
-  .map,
-  .wgrid,
-  .bgrid,
-  #demo,
-  #mylist {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
-    margin-top: 18px;
-  }
-
-  .card {
-    padding: 14px;
-  }
-
-  /* العدسة */
-  .lens-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
-  }
-
-  .cambox {
-    width: 100%;
-    max-width: 100%;
-    aspect-ratio: 4 / 3;
-    max-height: 280px;
-  }
-
-  .result {
-    width: 100%;
-    padding: 12px;
-  }
-
-  .word {
-    font-size: 2.3rem;
-  }
-
-  /* الحوار */
-  .chat-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
-  }
-
-  .chat-side {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px;
-    text-align: right;
-  }
-
-  .chat-side img {
-    width: 65px;
-    height: 65px;
-    object-fit: cover;
-  }
-
-  .chat-side .row {
-    flex: 1;
-    flex-wrap: wrap;
-    flex-direction: row;
-    margin: 0;
-  }
-
-  .chatbox {
-    width: 100%;
-    height: 55vh;
-    min-height: 250px;
-    max-height: 450px;
-    padding: 10px;
-  }
-
-  .bubble {
-    max-width: 92%;
-    font-size: 1rem;
-    overflow-wrap: anywhere;
-  }
-
-  .mic {
-    width: 46px;
-    height: 46px;
-    flex-shrink: 0;
-  }
-
-  /* الاختبار */
-  .quiz-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
-  }
-
-  .qbox {
-    width: 100%;
-    padding: 12px;
-  }
-
-  .qintro {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
-    padding: 16px;
-    text-align: center;
-  }
-
-  .qmascot {
-    max-width: 130px;
-    margin: auto;
-  }
-
-  #q-text,
-  #sq-t {
-    font-size: 1.3rem;
-  }
-
-  .qopt {
-    font-size: 1.1rem;
-    padding: 10px;
-  }
-
-  .passage {
-    font-size: 1.15rem;
-  }
-
-  .ladder {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .qrow {
-    flex-wrap: wrap;
-  }
-
-  /* الخريطة والبطاقات */
-  .st img {
-    height: 170px;
-  }
-
-  .chip {
-    font-size: 1.2rem;
-  }
-
-  .chip img {
-    height: 90px;
-  }
-
-  /* الحساب والملف الشخصي */
-  .authbox {
-    width: 100%;
-    max-width: 100%;
-    padding: 0 4px;
-  }
-
-  .ptabs {
-    gap: 6px;
-  }
-
-  .ptab {
-    padding: 7px 11px;
-    font-size: .85rem;
-  }
-
-  .hrow {
-    flex-wrap: wrap;
-  }
-
-  /* الفيديو */
-  .video iframe {
-    width: 100%;
-    height: auto;
-  }
-
-  .foot {
-    padding: 18px 12px;
-  }
-
-}
-
-/* =========================================
-   الهواتف الصغيرة جدًا
-   ========================================= */
-
-@media (max-width: 380px) {
-
-  .page {
-    padding-inline: 10px;
-  }
-
-  .brand {
-    font-size: .95rem;
-  }
-
-  .tools {
-    font-size: .8rem;
-  }
-
-  .hero .row .btn {
-    flex-basis: 100%;
-  }
-
-  .ladder {
-    gap: 5px;
-  }
-
-  .qopt {
-    font-size: 1rem;
-  }
-
-  .spk {
-    width: 42px;
-    height: 42px;
-  }
-
+.hero .row .btn:hover{
+  filter:brightness(.95);
+  transform:translateY(-2px);
 }
