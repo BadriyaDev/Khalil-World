@@ -594,3 +594,17 @@ iframe {
   }
 }
 
+/* تثبيت الهيدر أثناء التمرير */
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  background: rgba(255, 249, 238, 0.98);
+}
+
+/* منع تداخل المحتوى مع الهيدر عند الانتقال للأقسام */
+.page {
+  scroll-margin-top: 100px;
+}
+
