@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>عالم الخليل | تعلّم العربية واكتشف عالمها</title>
+<meta name="description" content="عالم الخليل منصة تفاعلية لتعلّم العربية للناطقين بغيرها باستخدام الذكاء الاصطناعي والتقنيات التعليمية الحديثة.">
+<meta property="og:title" content="عالم الخليل">
+<meta property="og:image" content="assets/img/og-cover.jpg">
+<link rel="icon" href="assets/img/logo-khalil-lens.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&family=Reem+Kufi:wght@500;700&family=Noto+Naskh+Arabic:wght@500;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1F7A7A">
+<link rel="apple-touch-icon" href="assets/img/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <button class="brand" data-go="home" data-k="home">
+    <img src="assets/img/logo-khalil-lens.jpg" alt="" onerror="this.style.display='none'">
+    <span>عالم الخليل</span>
+  </button>
+
+  <nav aria-label="القائمة">
+    <button data-go="home" data-k="home">الصفحة الرئيسية</button>
+    <button data-go="lens" data-k="lens">العدسة</button>
+    <button data-go="chat" data-k="chat">حوار الخليل</button>
+    <button data-go="journey" data-k="journey">رحلة في عُمان</button>
+    <button data-go="quiz" data-k="quiz">اختبر مستواك</button>
+    <button data-go="about" data-k="about">عن المشروع</button>
+    <button data-go="login" id="nav-acc">دخول</button>
+  </nav>
+
+  <div class="tools">
+    <label class="voicepick">
+      <span>صوت الأزرار</span>
+      <select id="ui-lang" aria-label="لغة شرح الأزرار" data-k="voicelang">
+        <option value="ar">العربية</option>
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+        <option value="ur">اردو</option>
+      </select>
+    </label>
+    <button id="guide-toggle" data-k="guide" aria-pressed="true">الشرح الصوتي: تشغيل</button>
+  </div>
+</header>
+
+<main>
+
+<section id="home" class="page">
+  <div class="hero">
+    <div class="hero-text">
+      <h1>تعلّم العربية<br>في عالم الخليل</h1>
+
+      <p>
+        اكتشف اللغة العربية بطريقة تفاعلية؛ تعلّم أسماء الأشياء
+        باستخدام الكاميرا والذكاء الاصطناعي، ثم تحدّث مع الخليل
+        وسافر في رحلة بين معالم عُمان.
+      </p>
+
+      <div class="row">
+        <button class="btn gold" data-go="lens" data-k="try">
+          جرّب العدسة الآن
+        </button>
+
+        <button class="btn ghost" data-go="quiz" data-k="quiz">
+          اختبر مستواك
+        </button>
+
+        <button class="btn ghost" data-go="journey" data-k="journey">
+          رحلة في عُمان
+        </button>
+
+        <button class="btn ghost" data-go="chat" data-k="chat">
+          حوار الخليل
+        </button>
+      </div>
+    </div>
+
+    <div class="arch">
+      <img
+        src="assets/img/hero-illustration.jpg"
+        alt="يد تصوّر دلّة قهوة بالجوال"
+        onerror="this.parentNode.classList.add('noimg')"
+      >
+    </div>
+  </div>
+
+  <div class="cards3">
+    <article class="card">
+      <h3>صوّر</h3>
+      <p>وجّه الكاميرا نحو أي شيء لتتعلّم اسمه ونطقه.</p>
+    </article>
+
+    <article class="card">
+      <h3>تحدّث</h3>
+      <p>حاور الخليل صوتًا أو كتابةً، وسيصحّح لك بلطف.</p>
+    </article>
+
+    <article class="card">
+      <h3>استكشف</h3>
+      <p>رحلة بين القلعة والسوق والميناء والصحراء.</p>
+    </article>
+  </div>
+</section>
+
+<section id="lens" class="page" hidden>
+  <h2>العدسة</h2>
+  <div class="lens-grid">
+    <div class="lcol">
+      <div class="cambox">
+        <video id="cam" autoplay playsinline muted></video>
+        <canvas id="snap" hidden></canvas>
+        <p id="cam-hint" class="hint">شغّل الكاميرا أو ارفع صورة</p>
+      </div>
+
+      <div class="row wrap">
+        <button class="btn" id="b-cam" data-k="cam">تشغيل الكاميرا</button>
+        <button class="btn gold" id="b-cap" data-k="capture">التقاط</button>
+        <label class="btn ghost" data-k="upload">رفع صورة<input type="file" id="file" accept="image/*" hidden></label>
+      </div>
+    </div>
+
+    <div class="lcol">
+      <div class="result" id="res" hidden>
+        <div class="word" id="r-ar"></div>
+        <div class="en" id="r-en"></div>
+        <p class="ex" id="r-ex"></p>
+
+        <div class="row wrap">
+          <button class="btn" id="b-listen" data-k="listen">استمع</button>
+          <button class="btn ghost" id="b-slow" data-k="slow">ببطء</button>
+          <button class="btn ghost" id="b-save" data-k="save">احفظ في قائمتي</button>
+        </div>
+      </div>
+
+      <h3>أو اختر كلمة جاهزة</h3>
+      <div class="chips" id="demo"></div>
+
+      <h3>قائمتي</h3>
+      <div class="chips" id="mylist"><span class="hint">لا توجد كلمات محفوظة بعد.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="chat" class="page" hidden>
+  <h2>حوار الخليل</h2>
+
+  <div class="chat-grid">
+    <aside class="chat-side">
+      <img src="assets/img/mascot-khalil.jpg" alt="الخليل" onerror="this.style.display='none'">
+
+      <div class="row wrap">
+        <select id="level" aria-label="المستوى" data-k="level">
+          <option value="مبتدئ">مبتدئ</option>
+          <option value="متوسط">متوسط</option>
+          <option value="صعب">صعب</option>
+        </select>
+
+        <select id="topic" aria-label="الموضوع" data-k="topic">
+          <option>السوق</option>
+          <option>الضيافة</option>
+          <option>السفر</option>
+          <option>السياحة</option>
+          <option>التعاملات المالية</option>
+        </select>
+      </div>
+    </aside>
+
+    <div class="chat-main">
+      <div class="row wrap chat-tools">
+        <button class="btn" id="b-call">📞 محادثة صوتية</button>
+        <label class="tgl"><input type="checkbox" id="auto-say" checked> قراءة ردود الخليل تلقائيًا</label>
+      </div>
+
+      <p class="hint" id="call-st" hidden></p>
+      <div class="chatbox" id="log" aria-live="polite"></div>
+
+      <div class="row">
+        <button class="mic" id="b-mic" data-k="mic" aria-label="تحدّث">🎤</button>
+        <input id="msg" type="text" placeholder="اكتب بالعربية…" aria-label="رسالتك">
+        <button class="btn gold" id="b-send" data-k="send">إرسال</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="journey" class="page" hidden>
+  <h2>رحلة عُمان</h2>
+
+  <div class="howto">
+    <b>كيف تعمل الرحلة؟</b>
+    <ol>
+      <li>ادخل المحطة واضغط كل بطاقة لتسمع الكلمة وتتعلّمها.</li>
+      <li>اجتز اختبار المحطة القصير بنسبة 70٪ أو أكثر.</li>
+      <li>تُفتح لك المحطة التالية. أكمل المحطات الأربع لتُنهي الرحلة.</li>
+    </ol>
+
+    <div class="pbar"><i id="j-bar"></i></div>
+    <p class="hint" id="j-prog"></p>
+  </div>
+
+  <div class="map" id="stations"></div>
+
+  <div id="station-view" hidden>
+    <h3 id="sv-title"></h3>
+
+    <div id="sv-learn">
+      <p class="hint" id="sv-count"></p>
+      <div class="wgrid" id="sv-words"></div>
+      <button class="btn gold" id="b-quiz" data-k="stquiz" disabled>ابدأ اختبار المحطة</button>
+    </div>
+
+    <div class="qbox" id="sv-quiz" hidden>
+      <div class="pbar"><i id="sq-bar"></i></div>
+      <p class="hint" id="sq-n"></p>
+      <div id="sq-img"></div>
+
+      <div class="qrow">
+        <button class="spk" id="sq-say" aria-label="استمع إلى السؤال">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+            <path d="M3 10v4h4l5 4V6L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/>
+          </svg>
+        </button>
+        <h3 id="sq-t"></h3>
+      </div>
+
+      <div id="sq-o"></div>
+
+      <div class="row wrap" id="sq-end" hidden>
+        <button class="btn ghost" id="b-review" data-k="review">راجع الكلمات</button>
+        <button class="btn gold" id="b-next" data-k="nextst" hidden>انتقل إلى المحطة التالية</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="quiz" class="page" hidden>
+  <h2>اختبر مستواك</h2>
+
+  <div class="qbox qintro" id="q-start">
+    <img class="qmascot" src="assets/img/mascot-khalil.jpg" alt="الخليل" onerror="this.style.display='none'">
+
+    <div>
+      <h3>اختبار تحديد المستوى</h3>
+      <p>اختبار تكيّفي: تصعُب الأسئلة إذا أجبتَ إجابةً صحيحة وتسهُل إذا أخطأت، لنصل إلى مستواك الحقيقي.</p>
+
+      <div class="facts">
+        <span>12 سؤالًا</span>
+        <span>4 مهارات</span>
+        <span>نحو 5 دقائق</span>
+      </div>
+
+      <div class="ladder">
+        <span>مبتدئ<small>A1</small></span>
+        <span>أساسي<small>A2</small></span>
+        <span>متوسط<small>B1</small></span>
+        <span>متقدم<small>B2+</small></span>
+      </div>
+
+      <p class="hint">لا تخمّن؛ اختر «لا أعرف الإجابة» إن لم تعرف. النتيجة تقديرية وليست شهادة رسمية.</p>
+      <button class="btn gold big-btn" id="b-startq" data-k="startq">ابدأ الاختبار</button>
+    </div>
+  </div>
+
+  <div class="qbox" id="q-play" hidden>
+    <div class="pbar"><i id="q-bar"></i></div>
+    <p class="hint" id="q-count"></p>
+    <div class="passage" id="q-pass" hidden></div>
+
+    <div class="qrow">
+      <button class="spk" id="q-say" aria-label="استمع إلى السؤال">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
+          <path d="M3 10v4h4l5 4V6L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/>
+        </svg>
+      </button>
+      <h3 id="q-text"></h3>
+    </div>
+
+    <div class="row" id="q-audiorow" hidden>
+      <button class="spk big" id="q-listen" aria-label="شغّل المقطع">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor" aria-hidden="true">
+          <path d="M3 10v4h4l5 4V6L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/>
+        </svg>
+      </button>
+      <span class="hint">اضغط لسماع المقطع</span>
+    </div>
+
+    <div id="q-opts"></div>
+  </div>
+
+  <div class="qbox" id="q-res" hidden style="text-align:center">
+    <p class="hint">مستواك في العربية</p>
+    <div class="big" id="q-lv"></div>
+    <p id="q-cefr"></p>
+    <p id="q-desc"></p>
+    <div id="q-sk"></div>
+
+    <p class="hint">نتيجة تقريبية مبنية على اثني عشر سؤالًا، وليست شهادة رسمية.</p>
+
+    <div class="row wrap" style="justify-content:center">
+      <button class="btn gold" id="b-learn" data-k="learn">ابدأ التعلّم</button>
+      <button class="btn ghost" id="b-again" data-k="again">أعد الاختبار</button>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="page" hidden>
+  <h2>عن المشروع</h2>
+
+  <div class="about-grid">
+    <div>
+      <p>
+        «عالم الخليل» منصة ويب تفاعلية لتعليم اللغة العربية
+        للناطقين بغيرها، تجمع بين الكاميرا والذكاء الاصطناعي
+        والمحادثة التفاعلية واختبارات تحديد المستوى والرحلات
+        الثقافية. وتربط تعلّم اللغة بالتنوّع الثقافي العُماني.
+        سُمّيت تيمّنًا بالخليل بن أحمد الفراهيدي، صاحب أول معجم عربي.
+      </p>
+
+      <h3>أهداف المنصة</h3>
+      <ul class="list">
+        <li>تحفيز التعلّم الذاتي للعربية بتقنيات حديثة.</li>
+        <li>تيسير تعليم العربية للناطقين بغيرها بأدوات رقمية تفاعلية.</li>
+        <li>ربط اللغة بالتنوّع الثقافي والتراث العُماني.</li>
+        <li>توظيف الذكاء الاصطناعي في تصحيح النطق والحوار.</li>
+      </ul>
+
+      <h3>التواصل</h3>
+      <p>الفريق: [اكتب الأسماء هنا] &nbsp;·&nbsp; البريد: [اكتب البريد هنا]</p>
+      <p class="hint">الصور في المنصة مولّدة بالذكاء الاصطناعي.</p>
+    </div>
+
+    <div class="video">
+      <!-- ضع رابط التضمين (embed) في src -->
+      <iframe src="" title="الفيديو التوضيحي" loading="lazy" allowfullscreen></iframe>
+    </div>
+  </div>
+</section>
+
+<section id="login" class="page" hidden>
+  <div class="qbox authbox">
+    <h2>تسجيل الدخول</h2>
+    <p class="hint">سجّل لتُحفظ نتائجك وإنجازاتك، أو ادخل كضيف.</p>
+
+    <input id="a-email" type="email" placeholder="البريد الإلكتروني" autocomplete="email" dir="ltr">
+    <input id="a-pass" type="password" placeholder="كلمة المرور (٦ أحرف على الأقل)" autocomplete="current-password" dir="ltr">
+
+    <div class="row">
+      <button class="btn gold" id="a-in">دخول</button>
+      <button class="btn ghost" id="a-up">إنشاء حساب</button>
+    </div>
+
+    <button class="btn ghost" id="a-google">الدخول بحساب Google</button>
+    <button class="btn ghost" id="a-guest">الدخول كضيف</button>
+    <p class="hint" id="a-msg" role="status"></p>
+  </div>
+</section>
+
+<section id="profile" class="page" hidden>
+  <h2>صفحتي الشخصية</h2>
+  <div id="pwrap"></div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p>© 2026 عالم الخليل. جميع الحقوق محفوظة.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+<script src="quiz.js"></script>
+<script src="auth.js"></script>
+
+</body>
+</html>
