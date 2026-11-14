@@ -1,124 +1,196 @@
-// يمكنك تغيير النموذج من Netlify بإضافة متغير GEMINI_MODEL دون تعديل الكود
-const MODEL = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
-const FALLBACK = 'gemini-2.5-flash';
+
+const MODEL = 'gemini-3.8-flash';
+const FALLBACK = 'gemini-3.5-flash-lite';
 
 const LENS = 'Identify the single main object in this photo. Reply with JSON only, no markdown: {"ar":"the Arabic word with full tashkeel","en":"English name","ex":"one short simple Arabic sentence with full tashkeel using the word"}';
 
-const CHAT = (level, topic) => `أنت «الخليل»، معلّم عربية ودود للناطقين بغيرها. المستوى: ${level}. الموضوع: ${topic}. أجب بعربية فصيحة مبسّطة مع التشكيل الكامل، في جملتين قصيرتين كحد أقصى، ثم اطرح سؤالاً بسيطاً. إذا أخطأ المتعلم فأضف في آخر الرد سطراً يبدأ بـ «تصحيح:» ثم الصيغة الصحيحة مشكولة. لا تستخدم الإنجليزية.`;
+const CHAT = (level, topic) =>
+  `أنت «الخليل»، معلّم عربية ودود للناطقين بغيرها. المستوى: ${level}. الموضوع: ${topic}. أجب بعربية فصيحة مبسّطة مع التشكيل الكامل، في جملتين قصيرتين كحد أقصى، ثم اطرح سؤالاً بسيطاً. إذا أخطأ المتعلم فأضف في آخر الرد سطراً يبدأ بـ «تصحيح:» ثم الصيغة الصحيحة مشكولة. لا تستخدم الإنجليزية.`;
 
 const H = { 'Content-Type': 'application/json' };
 
-const fail = (code, e) => ({
+const fail = (code, error) => ({
   statusCode: code,
   headers: H,
-  body: JSON.stringify({ error: e })
+  body: JSON.stringify({ error })
 });
 
-// إعداد التفكير يختلف بين الأجيال: الجيل 3 يستخدم thinkingLevel والجيل 2.5 يستخدم thinkingBudget
-const thinking = (model) =>
-  model.includes('gemini-3')
-    ? { thinkingConfig: { thinkingLevel: 'low' } }
-    : { thinkingConfig: { thinkingBudget: 0 } };
+const thinking = {
+  thinkingConfig: { thinkingLevel: 'low' }
+};
 
-function makeBody(b, model) {
+function makeBody(b) {
   if (b.mode === 'lens') {
     return {
       contents: [{
         parts: [
-          { inline_data: { mime_type: 'image/jpeg', data: b.img } },
+          {
+            inline_data: {
+              mime_type: 'image/jpeg',
+              data: b.img
+            }
+          },
           { text: LENS }
         ]
       }],
       generationConfig: {
-        ...thinking(model),
+        ...thinking,
         responseMimeType: 'application/json',
-        maxOutputTokens: 1024
+        maxOutputTokens: 512
       }
     };
   }
 
-  let h = (b.h || []).map(m => ({
+  let history = (b.h || []).slice(-4).map(m => ({
     role: m.r === 'model' ? 'model' : 'user',
-    parts: [{ text: String(m.t).slice(0, 500) }]
+    parts: [{ text: String(m.t || '').slice(0, 400) }]
   }));
 
-  while (h.length && h[0].role !== 'user') h.shift();
+  while (history.length && history[0].role !== 'user') {
+    history.shift();
+  }
 
-  if (!h.length) {
-    h = [{
+  if (!history.length) {
+    history = [{
       role: 'user',
-      parts: [{ text: String(b.msg || 'السلام عليكم').slice(0, 500) }]
+      parts: [{
+        text: String(b.msg || 'السلام عليكم').slice(0, 400)
+      }]
     }];
   }
 
   return {
     system_instruction: {
-      parts: [{ text: CHAT(b.level || 'مبتدئ', b.topic || 'السوق') }]
+      parts: [{
+        text: CHAT(b.level || 'مبتدئ', b.topic || 'السوق')
+      }]
     },
-    contents: h,
+    contents: history,
     generationConfig: {
-      ...thinking(model),
+      ...thinking,
       temperature: 0.7,
-      maxOutputTokens: 1024
+      maxOutputTokens: 256
     }
   };
 }
 
-async function callGemini(model, body) {
-  const r = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': process.env.GEMINI_API_KEY
-      },
-      body: JSON.stringify(body)
+async function callGemini(model, body, timeoutMs) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': process.env.GEMINI_API_KEY
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    return {
+      ok: response.ok,
+      status: response.status,
+      data
+    };
+
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      return { ok: false, timeout: true };
     }
-  );
-  const j = await r.json().catch(() => ({}));
-  return { r, j };
+
+    console.error('Gemini connection error:', error);
+    return { ok: false, connectionError: true };
+
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 exports.handler = async (event) => {
-  if (event.httpMethod !== 'POST') return fail(405, 'method');
+  if (event.httpMethod !== 'POST') {
+    return fail(405, 'method');
+  }
 
-  if (!process.env.GEMINI_API_KEY) return fail(500, 'no_key');
+  if (!process.env.GEMINI_API_KEY) {
+    return fail(500, 'no_key');
+  }
 
   try {
     const b = JSON.parse(event.body || '{}');
 
-    let model = MODEL;
-    let { r, j } = await callGemini(model, makeBody(b, model));
+    const body = makeBody(b);
+    const isLens = b.mode === 'lens';
 
-    // إذا رفض النموذج الأساسي الطلب (اسم أو إعداد غير مدعوم) نجرّب النموذج البديل
-    if (!r.ok && (r.status === 400 || r.status === 404) && model !== FALLBACK) {
-      console.error('primary model failed:', model, JSON.stringify(j.error || j));
-      model = FALLBACK;
-      ({ r, j } = await callGemini(model, makeBody(b, model)));
+    // نحدد وقتًا للرد الأول ثم وقتًا احتياطيًا للنموذج الثاني
+    const firstTimeout = isLens ? 5200 : 4200;
+    const secondTimeout = isLens ? 3000 : 3800;
+
+    let result = await callGemini(MODEL, body, firstTimeout);
+
+    // عند التأخر أو تعذر النموذج الأول نجرب النموذج الأسرع
+    if (
+      !result.ok &&
+      result.status !== 401 &&
+      result.status !== 403
+    ) {
+      console.error(
+        'Primary model failed:',
+        result.timeout ? 'timeout' : result.status || 'connection error'
+      );
+
+      result = await callGemini(FALLBACK, body, secondTimeout);
     }
 
-    if (!r.ok) {
-      console.error(model, JSON.stringify(j.error || j));
-      return fail(502, 'gemini_' + r.status);
+    if (!result.ok) {
+      if (result.timeout) {
+        return fail(504, 'gemini_timeout');
+      }
+
+      if (result.status) {
+        console.error(
+          'Fallback model failed:',
+          JSON.stringify(result.data?.error || result.data)
+        );
+
+        return fail(502, 'gemini_' + result.status);
+      }
+
+      return fail(502, 'connection_error');
     }
 
-    const parts = j.candidates?.[0]?.content?.parts || [];
-    const text = parts.filter(p => !p.thought).map(p => p.text || '').join('').trim();
+    const parts =
+      result.data?.candidates?.[0]?.content?.parts || [];
 
-    if (!text) {
-      console.error('empty response', JSON.stringify(j.promptFeedback || j.candidates?.[0]?.finishReason || j));
-      return fail(502, 'empty');
+    const answer = parts
+      .filter(part => !part.thought)
+      .map(part => part.text || '')
+      .join('')
+      .trim();
+
+    if (!answer) {
+      console.error(
+        'Empty Gemini response:',
+        JSON.stringify(result.data?.promptFeedback || result.data)
+      );
+
+      return fail(502, 'empty_response');
     }
 
     return {
       statusCode: 200,
       headers: H,
-      body: JSON.stringify({ text })
+      body: JSON.stringify({ text: answer })
     };
 
-  } catch (e) {
-    console.error(e);
-    return fail(500, 'server');
+  } catch (error) {
+    console.error('Function error:', error);
+    return fail(500, 'server_error');
   }
 };
