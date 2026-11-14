@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>عالم الخليل | تعلّم العربية واكتشف عالمها</title>
-<meta name="description" content="عالم الخليل منصة تفاعلية لتعلّم العربية للناطقين بغيرها باستخدام الذكاء الاصطناعي والتقنيات التعليمية الحديثة.">
+<meta name="description" content="عالم الخليل منصة تفاعلية لتعلّم العربية للناطقين بغيرها من خلال القاموس المصوّر والمحادثة واختبارات تحديد المستوى والرحلات الثقافية.">
 <meta property="og:title" content="عالم الخليل">
 <meta property="og:image" content="assets/img/og-cover.jpg">
 <link rel="icon" href="assets/img/logo-khalil-lens.jpg">
@@ -14,6 +15,7 @@
 <meta name="theme-color" content="#1F7A7A">
 <link rel="apple-touch-icon" href="assets/img/icon-192.png">
 <link rel="stylesheet" href="style.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -25,7 +27,7 @@
 
   <nav aria-label="القائمة">
     <button data-go="home" data-k="home">الصفحة الرئيسية</button>
-    <button data-go="lens" data-k="lens">العدسة</button>
+    <button data-go="lens" data-k="lens">القاموس المصوّر</button>
     <button data-go="chat" data-k="chat">حوار الخليل</button>
     <button data-go="journey" data-k="journey">رحلة في عُمان</button>
     <button data-go="quiz" data-k="quiz">اختبر مستواك</button>
@@ -43,7 +45,7 @@
         <option value="ur">اردو</option>
       </select>
     </label>
-    <button id="guide-toggle" data-k="guide" aria-pressed="true">الشرح الصوتي: تشغيل</button>
+    <button id="guide-toggle" data-k="guide" aria-pressed="false">الشرح الصوتي: إيقاف</button>
   </div>
 </header>
 
@@ -56,13 +58,13 @@
 
       <p>
         اكتشف اللغة العربية بطريقة تفاعلية؛ تعلّم أسماء الأشياء
-        باستخدام الكاميرا والذكاء الاصطناعي، ثم تحدّث مع الخليل
+        من خلال القاموس المصوّر واستمع إلى نطقها، ثم تحدّث مع الخليل
         وسافر في رحلة بين معالم عُمان.
       </p>
 
       <div class="row">
         <button class="btn gold" data-go="lens" data-k="try">
-          جرّب العدسة الآن
+          اكتشف القاموس المصوّر
         </button>
 
         <button class="btn ghost" data-go="quiz" data-k="quiz">
@@ -82,7 +84,7 @@
     <div class="arch">
       <img
         src="assets/img/hero-illustration.jpg"
-        alt="يد تصوّر دلّة قهوة بالجوال"
+        alt="رسم توضيحي لدلّة قهوة"
         onerror="this.parentNode.classList.add('noimg')"
       >
     </div>
@@ -90,8 +92,8 @@
 
   <div class="cards3">
     <article class="card">
-      <h3>صوّر</h3>
-      <p>وجّه الكاميرا نحو أي شيء لتتعلّم اسمه ونطقه.</p>
+      <h3>تعلّم</h3>
+      <p>اكتشف الكلمات العربية من خلال الصور واستمع إلى نطقها.</p>
     </article>
 
     <article class="card">
@@ -106,47 +108,34 @@
   </div>
 </section>
 
+<!-- ===== القاموس المصوّر ===== -->
 <section id="lens" class="page" hidden>
-  <h2>العدسة</h2>
-  <div class="lens-grid">
-    <div class="lcol">
-      <div class="cambox">
-        <video id="cam" autoplay playsinline muted></video>
-        <canvas id="snap" hidden></canvas>
-        <p id="cam-hint" class="hint">شغّل الكاميرا أو ارفع صورة</p>
-      </div>
+  <h2>القاموس المصوّر</h2>
+  <p class="hint">اختَر صورة لتتعلم اسمها باللغة العربية وتستمع إلى نطقها.</p>
 
-      <div class="row wrap">
-        <button class="btn" id="b-cam" data-k="cam">تشغيل الكاميرا</button>
-        <button class="btn gold" id="b-cap" data-k="capture">التقاط</button>
-        <label class="btn ghost" data-k="upload">رفع صورة<input type="file" id="file" accept="image/*" hidden></label>
-      </div>
+  <div class="result" id="res" hidden>
+    <div class="word" id="r-ar"></div>
+    <div class="en" id="r-en"></div>
+    <p class="ex" id="r-ex"></p>
+
+    <div class="row wrap">
+      <button class="btn" id="b-listen" data-k="listen">استمع</button>
+      <button class="btn ghost" id="b-slow" data-k="slow">ببطء</button>
+      <button class="btn ghost" id="b-save" data-k="save">احفظ في قائمتي</button>
     </div>
+  </div>
 
-    <div class="lcol">
-      <div class="result" id="res" hidden>
-        <div class="word" id="r-ar"></div>
-        <div class="en" id="r-en"></div>
-        <p class="ex" id="r-ex"></p>
+  <h3>اختر كلمة مصوّرة</h3>
+  <div class="chips" id="demo"></div>
 
-        <div class="row wrap">
-          <button class="btn" id="b-listen" data-k="listen">استمع</button>
-          <button class="btn ghost" id="b-slow" data-k="slow">ببطء</button>
-          <button class="btn ghost" id="b-save" data-k="save">احفظ في قائمتي</button>
-        </div>
-      </div>
-
-      <h3>أو اختر كلمة جاهزة</h3>
-      <div class="chips" id="demo"></div>
-
-      <h3>قائمتي</h3>
-      <div class="chips" id="mylist"><span class="hint">لا توجد كلمات محفوظة بعد.</span></div>
-    </div>
+  <h3>قائمتي</h3>
+  <div class="chips" id="mylist">
+    <span class="hint">لا توجد كلمات محفوظة بعد.</span>
   </div>
 </section>
 
 <section id="chat" class="page" hidden>
-  <h2>حوار الخليل</h2>
+  <h2>حوار مع الخليل</h2>
 
   <div class="chat-grid">
     <aside class="chat-side">
@@ -171,11 +160,9 @@
 
     <div class="chat-main">
       <div class="row wrap chat-tools">
-        <button class="btn" id="b-call">📞 محادثة صوتية</button>
         <label class="tgl"><input type="checkbox" id="auto-say" checked> قراءة ردود الخليل تلقائيًا</label>
       </div>
 
-      <p class="hint" id="call-st" hidden></p>
       <div class="chatbox" id="log" aria-live="polite"></div>
 
       <div class="row">
@@ -188,7 +175,7 @@
 </section>
 
 <section id="journey" class="page" hidden>
-  <h2>رحلة عُمان</h2>
+  <h2>رحلة في عُمان</h2>
 
   <div class="howto">
     <b>كيف تعمل الرحلة؟</b>
@@ -285,7 +272,6 @@
           <path d="M3 10v4h4l5 4V6L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/>
         </svg>
       </button>
-      <span class="hint">اضغط لسماع المقطع</span>
     </div>
 
     <div id="q-opts"></div>
@@ -314,9 +300,9 @@
     <div>
       <p>
         «عالم الخليل» منصة ويب تفاعلية لتعليم اللغة العربية
-        للناطقين بغيرها، تجمع بين الكاميرا والذكاء الاصطناعي
-        والمحادثة التفاعلية واختبارات تحديد المستوى والرحلات
-        الثقافية. وتربط تعلّم اللغة بالتنوّع الثقافي العُماني.
+        للناطقين بغيرها، تجمع بين القاموس المصوّر والمحادثة
+        التفاعلية واختبارات تحديد المستوى والرحلات الثقافية.
+        وتربط تعلّم اللغة بالتنوّع الثقافي العُماني.
         سُمّيت تيمّنًا بالخليل بن أحمد الفراهيدي، صاحب أول معجم عربي.
       </p>
 
@@ -325,36 +311,35 @@
         <li>تحفيز التعلّم الذاتي للعربية بتقنيات حديثة.</li>
         <li>تيسير تعليم العربية للناطقين بغيرها بأدوات رقمية تفاعلية.</li>
         <li>ربط اللغة بالتنوّع الثقافي والتراث العُماني.</li>
-        <li>توظيف الذكاء الاصطناعي في تصحيح النطق والحوار.</li>
+        <li>توظيف الذكاء الاصطناعي في المحادثة وتصحيح اللغة.</li>
       </ul>
 
-      <h3>التواصل</h3>
-      <p>الفريق: [اكتب الأسماء هنا] &nbsp;·&nbsp; البريد: [اكتب البريد هنا]</p>
       <p class="hint">الصور في المنصة مولّدة بالذكاء الاصطناعي.</p>
     </div>
 
     <div class="video">
-      <!-- ضع رابط التضمين (embed) في src -->
       <iframe src="" title="الفيديو التوضيحي" loading="lazy" allowfullscreen></iframe>
     </div>
   </div>
 </section>
 
+
 <section id="login" class="page" hidden>
   <div class="qbox authbox">
-    <h2>تسجيل الدخول</h2>
-    <p class="hint">سجّل لتُحفظ نتائجك وإنجازاتك، أو ادخل كضيف.</p>
+    <h2>مرحبًا بك في عالم الخليل</h2>
 
-    <input id="a-email" type="email" placeholder="البريد الإلكتروني" autocomplete="email" dir="ltr">
-    <input id="a-pass" type="password" placeholder="كلمة المرور (٦ أحرف على الأقل)" autocomplete="current-password" dir="ltr">
+    <p class="hint">
+      اختر طريقة الدخول وابدأ رحلتك في تعلّم اللغة العربية.
+    </p>
 
-    <div class="row">
-      <button class="btn gold" id="a-in">دخول</button>
-      <button class="btn ghost" id="a-up">إنشاء حساب</button>
-    </div>
+    <button class="btn gold" id="a-google">
+      المتابعة باستخدام Google
+    </button>
 
-    <button class="btn ghost" id="a-google">الدخول بحساب Google</button>
-    <button class="btn ghost" id="a-guest">الدخول كضيف</button>
+    <button class="btn ghost" id="a-guest">
+      تابع إلى المنصة دون إنشاء حساب
+    </button>
+
     <p class="hint" id="a-msg" role="status"></p>
   </div>
 </section>
