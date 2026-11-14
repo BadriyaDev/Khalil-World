@@ -4,11 +4,16 @@ const TX={
 ar:['اختبر مستواك. اختبار يحدد مستواك في العربية','ابدأ الاختبار','لا أعرف الإجابة','أعد الاختبار','ابدأ التعلم'],
 en:['Test your level. A quiz that places your Arabic level','Start the test',"I don't know",'Retake the test','Start learning'],
 hi:['अपना स्तर जाँचें। अरबी में आपका स्तर बताने वाला टेस्ट','टेस्ट शुरू करें','मुझे नहीं पता','टेस्ट दोबारा दें','सीखना शुरू करें'],
-ur:['اپنا درجہ جانچیں۔ عربی میں آپ کا درجہ بتانے والا ٹیسٹ','ٹیسٹ شروع کریں','مجھے معلوم نہیں','ٹیسٹ دوبارہ دیں','سیکھنا شروع کریں']};
+ur:['اپنا درجہ جانچیں۔ عربی میں آپ کا درجہ بتانے والا ٹیسٹ','ٹیسٹ شروع کریں','مجھے معلوم نہیں','ٹیسٹ دوبارہ دیں','سیکھنا شروع کریں']
+};
 
-Object.entries(TX).forEach(([l,a])=>['quiz','startq','idk','again','learn'].forEach((k,i)=>T[l][k]=a[i]));
+Object.entries(TX).forEach(([l,a])=>{
+  ['quiz','startq','idk','again','learn'].forEach((k,i)=>{
+    T[l][k]=a[i];
+  });
+});
 
-// [المستوى، المهارة (v مفردات، g قواعد، r قراءة، l استماع)، السؤال، الخيارات (الصحيح أولاً ويُخلط)، نص القراءة/الاستماع]
+// [المستوى، المهارة، السؤال، الخيارات، نص القراءة/الاستماع]
 const B=[
 [1,'v','أَيُّ شَيْءٍ نَقْرَؤُهُ؟',['كِتَابٌ','بَابٌ','سَيَّارَةٌ']],
 [1,'g','مَاذَا نَقُولُ فِي الصَّبَاحِ؟',['صَبَاحُ الخَيْرِ','تُصْبِحُ عَلَى خَيْرٍ','مَعَ السَّلَامَةِ']],
@@ -37,97 +42,245 @@ const B=[
 ];
 
 const N=12,SK={v:'المفردات',g:'القواعد',r:'القراءة',l:'الاستماع'};
-const LV=[0,['مبتدئ','A1','يفهم الكلمات والجمل البسيطة جداً.'],['أساسي','A2','يتواصل في مواقف يومية بسيطة.'],['متوسط','B1','يفهم نصوصاً متوسطة ويعبّر عن أفكاره.'],['متقدم','B2 فأعلى','يفهم نصوصاً معقدة ويتقن القواعد.']];
+const LV=[
+  0,
+  ['مبتدئ','A1','يفهم الكلمات والجمل البسيطة جداً.'],
+  ['أساسي','A2','يتواصل في مواقف يومية بسيطة.'],
+  ['متوسط','B1','يفهم نصوصاً متوسطة ويعبّر عن أفكاره.'],
+  ['متقدم','B2 فأعلى','يفهم نصوصاً معقدة ويتقن القواعد.']
+];
 
 const sh=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
 const clamp=v=>Math.max(1,Math.min(4,v));
+
 let S;
 
 function startQ(){
-  S={lv:2,used:new Set(),Ls:[],sk:{},n:0,cur:0};
+  S={
+    lv:2,
+    used:new Set(),
+    Ls:[],
+    sk:{},
+    n:0,
+    cur:0,
+    lock:false,
+    finished:false
+  };
+
   $('#q-start').hidden=true;
   $('#q-res').hidden=true;
   $('#q-play').hidden=false;
+
+  $('#q-bar').style.width='0%';
+  $('#q-count').textContent=`السؤال 1 من ${N}`;
+
   nextQ();
 }
 
 function pickQ(){
   for(const d of [0,1,-1,2,-2,3,-3]){
     const p=B.map((x,i)=>i).filter(i=>B[i][0]===S.lv+d&&!S.used.has(i));
+
     if(p.length)return p[Math.floor(Math.random()*p.length)];
   }
 }
 
 function nextQ(){
-  if(S.n>=N)return finishQ();
+  if(S.n>=N){
+    $('#q-bar').style.width='100%';
+    $('#q-count').textContent=`اكتمل الاختبار: ${N} من ${N}`;
+    finishQ();
+    return;
+  }
 
   const i=pickQ();
+
+  if(i===undefined){
+    finishQ();
+    return;
+  }
+
   S.cur=i;
   S.used.add(i);
+  S.lock=false;
+
   const q=B[i];
+
   S.Ls.push(q[0]);
 
   $('#q-bar').style.width=(S.n/N*100)+'%';
   $('#q-count').textContent=`السؤال ${S.n+1} من ${N}`;
 
   $('#q-pass').hidden=q[1]!=='r';
+
   if(q[1]==='r')$('#q-pass').textContent=q[4];
 
-  // إظهار زر إعادة الاستماع في أسئلة الاستماع فقط
   $('#q-audiorow').hidden=q[1]!=='l';
 
-  // تشغيل المقطع تلقائيًا في أسئلة الاستماع
   if(q[1]==='l')sayAr(q[4],.75,false);
 
   $('#q-text').textContent=q[2];
 
-  $('#q-opts').innerHTML=sh(q[3]).map(o=>`<button class="qopt" data-ok="${o===q[3][0]?1:0}">${o}</button>`).join('')+
-    `<button class="qopt ghostb" data-ok="0" data-k="idk">لا أعرف الإجابة</button>`;
+  $('#q-opts').innerHTML=sh(q[3]).map(o=>`
+    <button class="qopt" data-ok="${o===q[3][0]?1:0}">${o}</button>
+  `).join('')+
+  `<button class="qopt ghostb" data-ok="0" data-k="idk">لا أعرف الإجابة</button>`;
 }
 
 function answer(ok){
+  if(!S||S.lock||S.finished)return;
+
+  S.lock=true;
+
+  $('#q-opts').querySelectorAll('.qopt').forEach(b=>{
+    b.disabled=true;
+  });
+
   const s=B[S.cur][1];
+
   S.sk[s]=S.sk[s]||[0,0];
   S.sk[s][1]++;
+
   if(ok)S.sk[s][0]++;
 
   S.n++;
   S.lv=clamp(S.lv+(ok?1:-1));
-  nextQ();
+
+  const progress=Math.min(100,(S.n/N)*100);
+  $('#q-bar').style.width=progress+'%';
+
+  if(S.n>=N){
+    $('#q-count').textContent=`اكتمل الاختبار: ${N} من ${N}`;
+    finishQ();
+  }else{
+    nextQ();
+  }
 }
 
 function finishQ(){
-  // طريقة السلّم: متوسط مستويات الأسئلة بعد الإحماء + المستوى التالي
-  const lv=clamp(Math.round(S.Ls.slice(3).concat(S.lv).reduce((a,b)=>a+b,0)/(S.Ls.length-2)));
-  const [name,cefr,desc]=LV[lv];
+  if(!S || S.finished)return;
 
-  save('level',lv);
-  logRes({t:'level',n:'اختبار تحديد المستوى',l:`${name} (${cefr})`});
-  award('level');
+  // منع تكرار عرض النتيجة
+  S.finished=true;
 
+  // إظهار النتيجة فورًا
   $('#q-play').hidden=true;
   $('#q-res').hidden=false;
+
+  $('#q-bar').style.width='100%';
+  $('#q-count').textContent=`اكتمل الاختبار: ${N} من ${N}`;
+
+  // حساب المستوى النهائي
+  const lv=clamp(
+    Math.round(
+      S.Ls.slice(3).concat(S.lv).reduce((a,b)=>a+b,0) /
+      (S.Ls.length-2)
+    )
+  );
+
+  const [name,cefr,desc]=LV[lv];
+
+  // حساب الإجابات الصحيحة
+  const correct=Object.values(S.sk).reduce(
+    (sum,item)=>sum+item[0],0
+  );
+
+  const total=Object.values(S.sk).reduce(
+    (sum,item)=>sum+item[1],0
+  );
+
+  const percent=total
+    ? Math.round((correct/total)*100)
+    : 0;
+
+  // رسالة التشجيع حسب النتيجة
+  let encouragement;
+
+  if(percent>=90){
+    encouragement='ممتاز! أداء رائع يدل على تمكنك من اللغة العربية. استمر في هذا التقدم!';
+  }else if(percent>=75){
+    encouragement='أحسنت! لديك مستوى جيد في اللغة العربية، واصل التعلم لتصل إلى مستوى أعلى.';
+  }else if(percent>=50){
+    encouragement='عمل جيد! لديك أساس لا بأس به، ومع الممارسة والتدريب ستتحسن أكثر.';
+  }else{
+    encouragement='لا تستسلم! كل بداية تحتاج إلى تدريب. ابدأ من مستواك الحالي وتقدم خطوة بخطوة.';
+  }
+
+  // عرض المستوى
   $('#q-lv').textContent=name;
   $('#q-cefr').textContent=`المستوى ${lv} من 4 (${cefr})`;
-  $('#q-desc').textContent=desc;
 
-  $('#q-sk').innerHTML=Object.entries(S.sk).map(([k,[c,t]])=>`<div class="sk"><span>${SK[k]}</span><div class="pbar"><i style="width:${c/t*100}%"></i></div><b>${c}/${t}</b></div>`).join('');
+  // عرض النتيجة والتشجيع
+  $('#q-desc').style.whiteSpace='pre-line';
+  $('#q-desc').textContent=
+    `${desc}\n\n`+
+    `نتيجتك النهائية: ${correct} من ${total}\n`+
+    `نسبة الإجابات الصحيحة: ${percent}%\n\n`+
+    `${encouragement}`;
 
-  sayAr(`مُسْتَوَاكَ ${name}`,.8,false);
+  // عرض نتيجة كل مهارة
+  $('#q-sk').innerHTML=Object.entries(S.sk).map(([k,[c,t]])=>`
+    <div class="sk">
+      <span>${SK[k]}</span>
+      <div class="pbar">
+        <i style="width:${t ? (c/t*100) : 0}%"></i>
+      </div>
+      <b>${c}/${t}</b>
+    </div>
+  `).join('');
+
+  // حفظ المستوى دون تعطيل ظهور النتيجة
+  try{
+    save('level',lv);
+  }catch(e){
+    console.error('تعذر حفظ المستوى:',e);
+  }
+
+  // تسجيل نتيجة الاختبار
+  try{
+    logRes({
+      t:'level',
+      n:'اختبار تحديد المستوى',
+      l:`${name} (${cefr})`
+    });
+  }catch(e){
+    console.error('تعذر تسجيل النتيجة:',e);
+  }
+
+  // تسجيل الإنجاز
+  try{
+    award('level');
+  }catch(e){
+    console.error('تعذر تسجيل الإنجاز:',e);
+  }
+
+  // نطق المستوى النهائي
+  try{
+    sayAr(`مُسْتَوَاكَ ${name}`,.8,false);
+  }catch(e){
+    console.error('تعذر نطق المستوى:',e);
+  }
 }
 
+// استقبال اختيار الإجابة
 $('#q-opts').onclick=e=>{
   const b=e.target.closest('.qopt');
-  if(b)answer(b.dataset.ok==='1');
+
+  if(b&&!b.disabled){
+    answer(b.dataset.ok==='1');
+  }
 };
 
 // زر نطق نص السؤال
-$('#q-say').onclick=()=>sayAr($('#q-text').textContent,.75,false);
+$('#q-say').onclick=()=>{
+  sayAr($('#q-text').textContent,.75,false);
+};
 
 // زر إعادة تشغيل مقطع الاستماع
 $('#q-listen').onclick=()=>{
   const q=B[S.cur];
-  if(q && q[1]==='l' && q[4]){
+
+  if(q&&q[1]==='l'&&q[4]){
     sayAr(q[4],.75,false);
   }
 };
@@ -137,4 +290,6 @@ $('#b-again').onclick=startQ;
 $('#b-learn').onclick=()=>go('lens');
 
 /* ===== تثبيت المنصة (PWA) ===== */
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
