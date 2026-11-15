@@ -134,40 +134,46 @@
   </div>
 </section>
 
+
 <section id="chat" class="page" hidden>
   <h2>حوار مع الخليل</h2>
+  <p class="hint">اختر مجالًا، وابدأ محادثة تعليمية تفاعلية مع الخليل.</p>
 
   <div class="chat-grid">
     <aside class="chat-side">
-      <img src="assets/img/mascot-khalil.jpg" alt="الخليل" onerror="this.style.display='none'">
+      <img src="assets/img/mascot-khalil.jpg" alt="الخليل"
+           onerror="this.style.display='none'">
 
       <div class="row wrap">
-        <select id="level" aria-label="المستوى" data-k="level">
-          <option value="مبتدئ">مبتدئ</option>
-          <option value="متوسط">متوسط</option>
-          <option value="صعب">صعب</option>
+        <label for="topic">مجال المحادثة</label>
+        <select id="topic" aria-label="مجال المحادثة" data-k="topic">
+          <option value="السوق">السوق</option>
+          <option value="الضيافة">الضيافة</option>
+          <option value="السفر">السفر</option>
+          <option value="السياحة">السياحة</option>
+          <option value="التعاملات المالية">التعاملات المالية</option>
         </select>
 
-        <select id="topic" aria-label="الموضوع" data-k="topic">
-          <option>السوق</option>
-          <option>الضيافة</option>
-          <option>السفر</option>
-          <option>السياحة</option>
-          <option>التعاملات المالية</option>
-        </select>
+        <button class="btn gold" id="chat-start">ابدأ محادثة جديدة</button>
       </div>
     </aside>
 
     <div class="chat-main">
       <div class="row wrap chat-tools">
-        <label class="tgl"><input type="checkbox" id="auto-say" checked> قراءة ردود الخليل تلقائيًا</label>
+        <label class="tgl">
+          <input type="checkbox" id="auto-say" checked>
+          قراءة ردود الخليل تلقائيًا
+        </label>
       </div>
 
       <div class="chatbox" id="log" aria-live="polite"></div>
 
-      <div class="row">
-        <button class="mic" id="b-mic" data-k="mic" aria-label="تحدّث">🎤</button>
-        <input id="msg" type="text" placeholder="اكتب بالعربية…" aria-label="رسالتك">
+      <div class="row chat-input-row">
+        <button class="mic" id="b-mic" data-k="mic"
+                aria-label="تحدث">🎤</button>
+        <input id="msg" type="text"
+               placeholder="اكتب إجابتك بالعربية…"
+               aria-label="رسالتك">
         <button class="btn gold" id="b-send" data-k="send">إرسال</button>
       </div>
     </div>
@@ -318,7 +324,7 @@
     </div>
 
     <div class="video">
-      <iframe src="" title="الفيديو التوضيحي" loading="lazy" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/XOHSNn84Acs" title="الفيديو التوضيحي" loading="lazy" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
     </div>
   </div>
 </section>
@@ -332,9 +338,7 @@
       اختر طريقة الدخول وابدأ رحلتك في تعلّم اللغة العربية.
     </p>
 
-    <button class="btn gold" id="a-google">
-      المتابعة باستخدام Google
-    </button>
+    <div id="google-signin-button"></div>
 
     <button class="btn ghost" id="a-guest">
       تابع إلى المنصة دون إنشاء حساب
@@ -355,8 +359,9 @@
   <p>© 2026 عالم الخليل. جميع الحقوق محفوظة.</p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+
 <script src="app.js"></script>
+<script src="chat.js"></script>
 <script src="quiz.js"></script>
 <script src="auth.js"></script>
 
