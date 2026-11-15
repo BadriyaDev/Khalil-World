@@ -1,3 +1,4 @@
+
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const LS=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
@@ -176,20 +177,6 @@ $$('[data-go]').forEach(b=>{
 
 go(location.hash.slice(1)||'home');
 
-/* ===== الاتصال بالذكاء الاصطناعي ===== */
-const ask=body=>fetch('/api/ai',{
-  method:'POST',
-  headers:{'Content-Type':'application/json'},
-  body:JSON.stringify(body)
-})
-.then(async r=>{
-  const j=await r.json().catch(()=>({}));
-
-  if(!r.ok||j.error)throw new Error(j.error||('http_'+r.status));
-
-  return j.text;
-});
-
 /* ===== القاموس المصوّر ===== */
 const DEMO=[
 ['دَلَّةٌ','coffee pot','أَشْرَبُ القَهْوَةَ مِنَ الدَّلَّةِ.','object-dallah.jpg'],
@@ -276,101 +263,6 @@ $('#b-save').onclick=()=>{
 };
 
 renderList();
-
-/* ===== حوار الخليل ===== */
-const log=$('#log');
-let hist=[];
-
-function bubble(cls,text){
-  const d=document.createElement('div');
-  d.className='bubble '+cls;
-
-  const [main,fix]=text.split('تصحيح:');
-
-  d.textContent=main.trim();
-
-  if(fix){
-    const f=document.createElement('div');
-    f.className='fix';
-    f.textContent='تصحيح: '+fix.trim();
-    d.appendChild(f);
-  }
-
-  log.appendChild(d);
-  log.scrollTop=log.scrollHeight;
-
-  return main.trim();
-}
-
-function send(txt){
-  txt=(txt||$('#msg').value).trim();
-  if(!txt)return;
-
-  $('#msg').value='';
-
-  bubble('me',txt);
-  hist.push({r:'user',t:txt});
-
-  $('#b-send').disabled=true;
-
-  const w=document.createElement('div');
-  w.className='bubble bot';
-  w.textContent='…';
-
-  log.appendChild(w);
-  log.scrollTop=log.scrollHeight;
-
-  ask({
-    mode:'chat',
-    msg:txt,
-    h:hist.slice(-6),
-    level:$('#level').value,
-    topic:$('#topic').value
-  })
-  .then(t=>{
-    w.remove();
-    hist.push({r:'model',t});
-    sayAr(bubble('bot',t),.8,false);
-  })
-  .catch(e=>{
-    w.remove();
-    hist.pop();
-
-    bubble(
-      'bot',
-      'عُذْرًا، تَعَذَّرَ الرَّدُّ الآنَ. حَاوِلْ مَرَّةً أُخْرَى. ('+(e.message||'خطأ')+')'
-    );
-  })
-  .finally(()=>{
-    $('#b-send').disabled=false;
-  });
-}
-
-$('#b-send').onclick=()=>send();
-
-$('#msg').addEventListener('keydown',e=>{
-  if(e.key==='Enter'){
-    e.preventDefault();
-    send();
-  }
-});
-
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-
-$('#b-mic').onclick=()=>{
-  if(!SR)return alert('التعرف على الصوت يعمل في متصفح Chrome. اكتب رسالتك بدلاً من ذلك.');
-
-  const r=new SR();
-  r.lang='ar-SA';
-
-  const m=$('#b-mic');
-  m.classList.add('rec');
-
-  r.onresult=e=>send(e.results[0][0].transcript);
-  r.onend=()=>m.classList.remove('rec');
-
-  r.start();
-};
 
 /* ===== رحلة في عُمان ===== */
 const TJ={
