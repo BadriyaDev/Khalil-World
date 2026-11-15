@@ -1,12 +1,12 @@
 
 /* ===== الحساب وتسجيل الدخول باستخدام Google ===== */
 
-/* ضعي Google Client ID بين علامتي الاقتباس */
 const GOOGLE_CLIENT_ID = '857541717542-0af34fovqj8jt2sr63l7sq60e0nu39mf.apps.googleusercontent.com';
 
 let user = null;
 let guest = LS('guest', false);
 let accountMenu = null;
+let googleInitialized = false;
 
 /* ===== الرسائل ===== */
 
@@ -149,11 +149,6 @@ function escapeHTML(value) {
 
 /* ===== قراءة بيانات Google ===== */
 
-/*
-  نقرأ بيانات الاسم والبريد من Google ID token
-  لا نخزن التوكن نفسه.
-*/
-
 function readGoogleCredential(credential) {
   try {
     const payload = credential.split('.')[1];
@@ -185,7 +180,7 @@ function handleGoogleLogin(response) {
   const data = readGoogleCredential(response.credential);
 
   if (!data || !data.email) {
-    authMsg('تعذّر قراءة بيانات حساب Google. حاول مرة أخرى.');
+    authMsg('تعذّر قراءة بيانات حساب Google. حاولي مرة أخرى.');
     return;
   }
 
@@ -197,11 +192,6 @@ function handleGoogleLogin(response) {
   };
 
   guest = false;
-
-  /*
-    تخزين الاسم والبريد فقط داخل الجلسة الحالية.
-    لا يتم تخزين كلمة مرور أو Google token.
-  */
 
   sessionStorage.setItem(
     'googleUser',
@@ -221,41 +211,47 @@ function handleGoogleLogin(response) {
   }
 }
 
-/* ===== تهيئة Google Identity Services ===== */
+/* ===== تهيئة زر Google الرسمي ===== */
 
 function initGoogleLogin() {
-  if (!GOOGLE_CLIENT_ID ||
-      GOOGLE_CLIENT_ID === 'PASTE_YOUR_GOOGLE_CLIENT_ID_HERE') {
-    authMsg('أضيفي Google Client ID أولاً في ملف auth.js.');
-    return;
-  }
+  if (googleInitialized) return;
+
+  const container = document.getElementById('google-signin-button');
+
+  if (!container) return;
 
   if (!window.google?.accounts?.id) {
     authMsg('تعذّر تحميل خدمة Google. أعيدي تحميل الصفحة.');
     return;
   }
 
+  if (!GOOGLE_CLIENT_ID) {
+    authMsg('لم يتم إعداد Google Client ID.');
+    return;
+  }
+
   google.accounts.id.initialize({
     client_id: GOOGLE_CLIENT_ID,
     callback: handleGoogleLogin,
-    auto_select: false
+    auto_select: false,
+    cancel_on_tap_outside: true
   });
 
-  const button = document.getElementById('a-google');
+  google.accounts.id.renderButton(
+    container,
+    {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      text: 'continue_with',
+      shape: 'rectangular',
+      logo_alignment: 'left',
+      width: 300,
+      locale: 'ar'
+    }
+  );
 
-  if (button) {
-    button.onclick = () => {
-      authMsg('اختاري حساب Google للمتابعة.');
-
-      google.accounts.id.prompt(notification => {
-        if (notification.isNotDisplayed()) {
-          authMsg(
-            'لم تظهر نافذة Google. تحققي من إعدادات المتصفح وحاولي مرة أخرى.'
-          );
-        }
-      });
-    };
-  }
+  googleInitialized = true;
 }
 
 /* ===== الدخول كضيف ===== */
@@ -368,26 +364,10 @@ function initAuth() {
 
   refresh();
 
-  const googleButton = document.getElementById('a-google');
+  initGoogleLogin();
 
-  if (googleButton) {
-    googleButton.onclick = () => {
-      if (!window.google?.accounts?.id) {
-        authMsg('انتظري قليلًا حتى يتم تحميل Google ثم حاولي مجددًا.');
-        return;
-      }
-
-      initGoogleLogin();
-      google.accounts.id.prompt();
-    };
-  }
-
-  if (window.google?.accounts?.id) {
-    initGoogleLogin();
-  } else {
-    window.addEventListener('load', () => {
-      initGoogleLogin();
-    }, { once: true });
+  if (!googleInitialized) {
+    window.addEventListener('load', initGoogleLogin, { once: true });
   }
 }
 
